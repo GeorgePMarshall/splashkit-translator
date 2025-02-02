@@ -8,8 +8,18 @@
 
     if the_class[:is_alias]
 %>
+/// <summary>
+/// <%= the_class[:alias_of][:description].to_s.gsub "\n", '<para></para>' %>
+
+/// </summary>
 public class <%= class_name %> : PointerWrapper
 {
+<% if the_class[:constructors].first %>
+  /// <summary>
+  /// <%= the_class[:constructors].first[:description].to_s.gsub "\n", '<para></para>' %>
+
+  /// </summary>
+<% end %>
   private <%= class_name %>(IntPtr ptr) : base(ptr, true) {}
 
   internal static <%= class_name %> FetchOrCreate(IntPtr ptr)
@@ -69,7 +79,10 @@ public static class <%= class_name %>
       method_data = get_method_data(fn)
       return_type = is_func?(fn) ? sk_type_for(fn[:return]) : 'void'
 %>
+    /// <summary>
+    /// <%= fn[:description].to_s.gsub "\n", '<para></para>'  %><%= fn[:brief].to_s.gsub "\n", '<para></para>'  %>
 
+    /// </summary>
     public <%= method_data[:static] %><%= return_type %> <%= fn[:attributes][:method].function_case %>(<%= method_data[:params] %>)
     {
 <%      if is_func? fn %>
@@ -81,7 +94,6 @@ public static class <%= class_name %>
 
 <%
     end # methods
-
     the_class[:properties].each do | property_name, property |
       if property[:getter]
         property_type = sk_type_for(property[:getter][:return])
@@ -92,6 +104,15 @@ public static class <%= class_name %>
       end
 
 %>
+    /// <summary>
+<%  if property[:getter] %>
+    ///Get: <%= property[:getter][:description].to_s.gsub "\n", '<para></para>' %>
+<%  end %>
+<%  if property[:setter] %>
+    ///<para></para>Set: <%= property[:setter][:description].to_s.gsub "\n", '<para></para>' %>
+<%  end %>
+
+    /// </summary>
     public <%= method_data[:static] %><%= property_type %> <%= property_name.to_s.to_pascal_case %>
 
     {
@@ -112,9 +133,9 @@ public static class <%= class_name %>
         method_data = get_method_data(fn)
         if method_data[:static].nil?
 %>
-          set { SplashKit.<%= fn[:name].function_case %>(this, value); }
+        set { SplashKit.<%= fn[:name].function_case %>(this, value); }
 <%      else %>
-          set { SplashKit.<%= fn[:name].function_case %>(value); }
+        set { SplashKit.<%= fn[:name].function_case %>(value); }
 <%
         end
       end

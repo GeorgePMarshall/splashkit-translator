@@ -6,6 +6,10 @@
     enum_type_name = enum[:name].to_pascal_case
     enum_name = enum[:name]
 %>
+  /// <summary>
+  /// <%= enum[:description].to_s.gsub "\n", '<para></para>' %>
+
+  /// </summary>
   public enum <%= enum_type_name %>
 
   {

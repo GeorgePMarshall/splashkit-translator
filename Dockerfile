@@ -19,6 +19,8 @@ RUN dnf update -y \
     cpan \ 
     && dnf clean all
 
+RUN dnf install -y zlib-devel xz patch
+
 RUN cpan -i FreezeThaw
 
 RUN gem install bundler

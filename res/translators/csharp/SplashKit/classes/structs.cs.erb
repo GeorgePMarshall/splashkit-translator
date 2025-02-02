@@ -36,13 +36,20 @@
 %>
 
   }
+  /// <summary>
+  /// <%= struct[:description].to_s.gsub "\n", '<para></para>' %>
 
+  /// </summary>
   public struct <%= struct[:name].to_pascal_case() %>
 
   {
 <%
     struct[:fields].each do |field_name, field_data|
 %>
+    /// <summary>
+    /// <%= field_data[:description].to_s.gsub "\n", '<para></para>' %>
+
+    /// </summary>
     public <%= sk_struct_field_for(field_name, field_data) %>;
 <%
     end # end fields.each
@@ -61,7 +68,10 @@
       method_data = get_method_data(fn)
       return_type = is_func?(fn) ? sk_type_for(fn[:return][:type]) : 'void'
 %>
+    /// <summary>
+    /// <%= fn[:description].to_s.gsub "\n", '<para></para>' %>
 
+    /// </summary>
     public <%= method_data[:static] %><%= return_type %> <%= fn[:attributes][:method].function_case %>(<%= method_data[:params] %>)
     {
 <%      if is_func? fn %>
@@ -84,6 +94,15 @@
       end
 
 %>
+    /// <summary>
+<% if property[:getter] %>
+    ///Get: <%= property[:getter][:description].to_s.gsub "\n", '<para></para>' %>
+<% end %>
+<% if property[:setter] %>
+    ///<para></para>Set: <%= property[:setter][:description].to_s.gsub "\n", '<para></para>' %>
+<% end %>
+
+    /// </summary>
     public <%= method_data[:static] %><%= property_type %> <%= property_name.to_s.to_pascal_case %>
 
     {
